@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <title>TradeNova | Professional Forex Trading Platform</title>
+    <!-- Lightweight Charts Library - Used by real trading platforms -->
+    <script src="https://unpkg.com/lightweight-charts@4.1.0/dist/lightweight-charts.standalone.production.js"></script>
+    <style>
+        /* ============================================ */
+        /* DARK TRADING THEME - PROFESSIONAL            */
+        /* ============================================ */
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0a0e17;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', 'Roboto', sans-serif;
+            color: #e8edf5;
+            padding: 16px;
+            min-height: 100vh;
+        }
+
+        /* Main app container - responsive */
+        .trading-app {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* ===== TOP NAVIGATION BAR ===== */
+        .nav-bar {
+            background: #0f1420;
+            border: 1px solid #1e2a3a;
+            border-radius: 24px;
+            padding: 12px 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo h1 {
+            font-size: 1.6rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .logo p {
+            font-size: 0.65rem;
+            color: #7a8aa5;
+        }
+
+        /* Mode Switch (Demo / Real) */
+        .mode-switch {
+            background: #080c16;
+            border-radius: 48px;
+            padding: 4px;
+            border: 1px solid #25324a;
+            display: flex;
+        }
+
+        .mode-btn {
+            padding: 8px 24px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            background: transparent;
+            color: #9aabc4;
+            border: none;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+
+        .mode-btn.active {
+            background: #1e2a3e;
+            color: #2ecc71;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        /* Balance Card */
+        .balance-card {
+            background: linear-gradient(135deg, #0f1628, #0a0f1a);
+            padding: 8px 28px;
+            border-radius: 48px;
+            border-left: 4px solid #2ecc71;
+            text-align: center;
+        }
+
+        .balance-label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #8a9abb;
+        }
+
+        .balance-amount {
+            font-size: 1.9rem;
+            font-weight: 800;
+            color: #ffffff;
+            line-height: 1.1;
+        }
+
+        .balance-amount small {
+            font-size: 0.8rem;
+            font-weight: 400;
+            color: #8a9abb;
+        }
+
+        /* Instrument Selector */
+        .instrument-picker {
+            background: #0f1420;
+            border: 1px solid #25324a;
+            border-radius: 48px;
+            padding: 4px 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .instrument-picker select {
+            background: #080c16;
+            border: none;
+            color: #e8edf5;
+            font-size: 0.9rem;
+            font-weight: 600;
+            padding: 10px 12px;
+            border-radius: 40px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            cursor: pointer;
+        }
+
+        /* ===== CHART AREA ===== */
+        .chart-area {
+            background: #060a12;
+            border-radius: 24px;
+            border: 1px solid #1e2a3a;
+            padding: 12px;
+        }
+
+        #tradingChart {
+            width: 100%;
+            height: 500px;
+            border-radius: 16px;
+        }
+
+        /* ===== BUY/SELL BUTTONS - REAL FOREX STYLE ===== */
+        .action-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-buy, .btn-sell {
+            flex: 1;
+            min-width: 170px;
+            padding: 20px 32px;
+            font-size: 1.7rem;
+            font-weight: 800;
+            border: none;
+            border-radius: 60px;
+            cursor: pointer;
+            font-family: inherit;
+            letter-spacing: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            transition: transform 0.08s linear;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.5);
+        }
+
+        .btn-buy {
+            background: #0a3b1f;
+            color: #2ecc71;
+            border-bottom: 5px solid #2ecc71;
+        }
+
+        .btn-buy:active {
+            transform: scale(0.96);
+            background: #0f5529;
+        }
+
+        .btn-sell {
+            background: #3b1a1a;
+            color: #e74c3c;
+            border-bottom: 5px solid #e74c3c;
+        }
+
+        .btn-sell:active {
+            transform: scale(0.96);
+            background: #562525;
+        }
+
+        /* ===== TRADE HISTORY ===== */
+        .history-section {
+            background: #0f1420;
+            border-radius: 24px;
+            border: 1px solid #1e2a3a;
+            padding: 18px;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border-bottom: 1px solid #1e3048;
+            padding-bottom: 12px;
+            margin-bottom: 14px;
+            color: #a0b4d4;
+        }
+
+        .history-list {
+            max-height: 280px;
+            overflow-y: auto;
+        }
+
+        .trade-item {
+            display: grid;
+            grid-template-columns: 90px 75px 1fr 90px;
+            gap: 10px;
+            background: #0a1020;
+            margin: 8px 0;
+            padding: 12px 14px;
+            border-radius: 16px;
+            font-size: 0.78rem;
+            font-weight: 500;
+            border-left: 4px solid;
+            align-items: center;
+        }
+
+        .trade-item.buy-trade {
+            border-left-color: #2ecc71;
+        }
+
+        .trade-item.sell-trade {
+            border-left-color: #e74c3c;
+        }
+
+        .profit-up {
+            color: #2ecc71;
+            font-weight: 700;
+        }
+
+        .profit-down {
+            color: #e74c3c;
+            font-weight: 700;
+        }
+
+        /* ===== PERFECT PHONE LAYOUT ===== */
+        @media (max-width: 680px) {
+            body {
+                padding: 10px;
+            }
+            .nav-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .balance-card {
+                text-align: center;
+            }
+            .btn-buy, .btn-sell {
+                min-width: 140px;
+                padding: 14px 20px;
+                font-size: 1.3rem;
+            }
+            .trade-item {
+                grid-template-columns: 70px 65px 1fr 70px;
+                font-size: 0.68rem;
+                gap: 6px;
+            }
+            #tradingChart {
+                height: 380px;
+            }
+            .instrument-picker select {
+                font-size: 0.75rem;
+            }
+        }
+
+        /* Custom scrollbar */
+        .history-list::-webkit-scrollbar {
+            width: 5px;
+        }
+        .history-list::-webkit-scrollbar-track {
+            background: #0f1625;
+            border-radius: 10px;
+        }
+        .history-list::-webkit-scrollbar-thumb {
+            background: #2e4a6e;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="trading-app">
+    <!-- TOP BAR -->
+    <div class="nav-bar">
+        <div class="logo">
+            <h1>⚡ TRADENOVA</h1>
+            <p>Forex · Gold · Indices · Live Candles</p>
+        </div>
+        <div class="mode-switch" id="modeSwitch">
+            <button class="mode-btn active" data-mode="demo">🎮 DEMO</button>
+            <button class="mode-btn" data-mode="real">💼 REAL (UI)</button>
+        </div>
+        <div class="balance-card">
+            <div class="balance-label">TOTAL BALANCE</div>
+            <div class="balance-amount" id="balanceValue">$10,000<small> USD</small></div>
+        </div>
+        <div class="instrument-picker">
+            <span>📊</span>
+            <select id="instrumentList">
+                <option value="EUR/USD">🇪🇺 EUR/USD</option>
+                <option value="GBP/USD">🇬🇧 GBP/USD</option>
+                <option value="USD/JPY">🇯🇵 USD/JPY</option>
+                <option value="XAU/USD">🥇 XAU/USD (Gold)</option>
+                <option value="XAG/USD">🥈 XAG/USD (Silver)</option>
+                <option value="AUD/USD">🇦🇺 AUD/USD</option>
+                <option value="USD/CAD">🇨🇦 USD/CAD</option>
+                <option value="NZD/USD">🇳🇿 NZD/USD</option>
+                <option value="USD/CHF">🇨🇭 USD/CHF</option>
+                <option value="EUR/GBP">💶 EUR/GBP</option>
+                <option value="EUR/JPY">💶 EUR/JPY</option>
+                <option value="GBP/JPY">💷 GBP/JPY</option>
+                <option value="US30">📈 US30 (Dow)</option>
+                <option value="SPX500">📊 SPX500</option>
+                <option value="NAS100">🚀 NAS100</option>
+                <option value="UK100">🇬🇧 UK100</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- LIVE CHART -->
+    <div class="chart-area">
+        <div id="tradingChart"></div>
+    </div>
+
+    <!-- BUY / SELL (PROFESSIONAL FOREX STYLE) -->
+    <div class="action-buttons">
+        <button class="btn-buy" id="buyTrade">▲ BUY ▲</button>
+        <button class="btn-sell" id="sellTrade">▼ SELL ▼</button>
+    </div>
+
+    <!-- TRADE HISTORY PANEL -->
+    <div class="history-section">
+        <div class="history-header">
+            <span>📋 TRADE HISTORY</span>
+            <span>Instrument / Side / Price / Profit</span>
+        </div>
+        <div class="history-list" id="tradeHistoryContainer">
+            <div style="text-align: center; color: #5a6e8a; padding: 24px;">✨ No trades yet — click BUY or SELL</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ============================================================
+    // TRADENOVA - PROFESSIONAL FOREX PLATFORM
+    // ============================================================
+    
+    // ---------- USER STATE ----------
+    let currentBalance = 10000.00;
+    let activeTradingMode = "demo";   // "demo" or "real" (real = UI only)
+    let tradesHistory = [];
+    
+    // ---------- CHART & MARKET DATA ----------
+    let tradingChart = null;
+    let candleSeries = null;
+    let liveCandlesData = [];
+    let currentMarketPrice = 1.0850;
+    let priceUpdateInterval = null;
+    let selectedInstrument = "EUR/USD";
+    
+    // Base prices for all instruments (realistic)
+    const instrumentBasePrices = {
+        "EUR/USD": 1.0850, "GBP/USD": 1.2650, "USD/JPY": 149.20,
+        "XAU/USD": 2350.50, "XAG/USD": 28.10, "AUD/USD": 0.6620,
+        "USD/CAD": 1.3580, "NZD/USD": 0.6120, "USD/CHF": 0.8980,
+        "EUR/GBP": 0.8570, "EUR/JPY": 162.50, "GBP/JPY": 189.30,
+        "US30": 39820, "SPX500": 5250, "NAS100": 18450, "UK100": 7920
+    };
+    
+    // Volatility per instrument (Gold & indices move more)
+    function getInstrumentVolatility(instrument) {
+        if (instrument === "XAU/USD") return 3.8;
+        if (instrument === "XAG/USD") return 0.45;
+        if (instrument === "US30" || instrument === "NAS100" || instrument === "SPX500") return 55;
+        if (instrument.includes("JPY")) return 0.55;
+        return 0.003;
+    }
+    
+    function getInstrumentBasePrice() {
+        return instrumentBasePrices[selectedInstrument] || 1.0850;
+    }
+    
+    // Generate initial candlestick history (looks real)
+    function generateCandleHistory(instrument, candleCount = 55) {
+        const candlesArray = [];
+        let currentBase = getInstrumentBasePrice();
+        let currentTimestamp = Date.now() - (candleCount * 65000);
+        const volatility = getInstrumentVolatility(instrument);
+        
+        for (let i = 0; i < candleCount; i++) {
+            const openPrice = currentBase;
+            const closePrice = openPrice + (Math.random() - 0.5) * volatility * 1.8;
+            const highPrice = Math.max(openPrice, closePrice) + Math.random() * volatility;
+            const lowPrice = Math.min(openPrice, closePrice) - Math.random() * volatility;
+            
+            candlesArray.push({
+                time: (currentTimestamp + i * 65000) / 1000,
+                open: parseFloat(openPrice.toFixed(4)),
+                high: parseFloat(highPrice.toFixed(4)),
+                low: parseFloat(lowPrice.toFixed(4)),
+                close: parseFloat(closePrice.toFixed(4))
+            });
+            currentBase = closePrice;
+        }
+        currentMarketPrice = candlesArray[candlesArray.length - 1].close;
+        return candlesArray;
+    }
+    
+    // Add new live candle (every 5 seconds)
+    function addLiveCandle() {
+        if (!candleSeries) return;
+        
+        const lastCandle = liveCandlesData[liveCandlesData.length - 1];
+        const volatility = getInstrumentVolatility(selectedInstrument);
+        let priceChange = (Math.random() - 0.5) * volatility;
+        const openCandle = lastCandle.close;
+        let closeCandle = openCandle + priceChange;
+        
+        // Prevent negative prices for indices
+        if (closeCandle <= 0 && selectedInstrument.includes("XAU")) closeCandle = openCandle + Math.abs(priceChange);
+        if (closeCandle <= 0) closeCandle = openCandle + 0.001;
+        
+        const highCandle = Math.max(openCandle, closeCandle) + Math.random() * volatility * 0.9;
+        const lowCandle = Math.min(openCandle, closeCandle) - Math.random() * volatility * 0.9;
+        
+        const newCandle = {
+            time: Date.now() / 1000,
+            open: parseFloat(openCandle.toFixed(4)),
+            high: parseFloat(highCandle.toFixed(4)),
+            low: parseFloat(lowCandle.toFixed(4)),
+            close: parseFloat(closeCandle.toFixed(4))
+        };
+        
+        liveCandlesData.push(newCandle);
+        if (liveCandlesData.length > 130) liveCandlesData.shift();
+        candleSeries.setData(liveCandlesData);
+        currentMarketPrice = newCandle.close;
+    }
+    
+    // Initialize the professional chart
+    function initializeChart() {
+        const chartElement = document.getElementById('tradingChart');
+        tradingChart = LightweightCharts.createChart(chartElement, {
+            layout: {
+                background: { color: '#060a12' },
+                textColor: '#cbd5e6',
+            },
+            grid: {
+                vertLines: { color: '#16202e', style: 1 },
+                horzLines: { color: '#16202e', style: 1 },
+            },
+            crosshair: { mode: LightweightCharts.CrosshairMode.Normal },
+            rightPriceScale: { borderColor: '#2a3a55', textColor: '#aabbdd' },
+            timeScale: { borderColor: '#2a3a55', timeVisible: true, secondsVisible: true },
+            width: chartElement.clientWidth,
+            height: 500,
+        });
+        
+        candleSeries = tradingChart.addCandlestickSeries({
+            upColor: '#2ecc71',
+            downColor: '#e74c3c',
+            borderDownColor: '#e74c3c',
+            borderUpColor: '#2ecc71',
+            wickDownColor: '#e74c3c',
+            wickUpColor: '#2ecc71',
+        });
+        
+        liveCandlesData = generateCandleHistory(selectedInstrument, 50);
+        candleSeries.setData(liveCandlesData);
+        currentMarketPrice = liveCandlesData[liveCandlesData.length - 1].close;
+        tradingChart.timeScale().fitContent();
+        
+        window.addEventListener('resize', () => {
+            tradingChart.applyOptions({ width: chartElement.clientWidth });
+        });
+    }
+    
+    // Switch instrument (reset chart)
+    function changeInstrument(newInstrument) {
+        selectedInstrument = newInstrument;
+        if (priceUpdateInterval) clearInterval(priceUpdateInterval);
+        
+        const freshCandles = generateCandleHistory(selectedInstrument, 50);
+        liveCandlesData = freshCandles;
+        if (candleSeries) {
+            candleSeries.setData(liveCandlesData);
+            tradingChart.timeScale().fitContent();
+        }
+        currentMarketPrice = liveCandlesData[liveCandlesData.length - 1].close;
+        priceUpdateInterval = setInterval(() => addLiveCandle(), 5000);
+    }
+    
+    // ---------- TRADING LOGIC (Real P&L based on market move simulation) ----------
+    function executeTrade(orderType) {
+        const tradePrice = currentMarketPrice;
+        
+        // Simulate realistic profit/loss based on instrument volatility
+        let pnlPercentage = (Math.random() - 0.38) * 1.4;
+        if (orderType === "BUY") {
+            pnlPercentage = pnlPercentage;
+        } else {
+            pnlPercentage = -pnlPercentage;
+        }
+        
+        let profitAmount = tradePrice * pnlPercentage * 90;
+        if (selectedInstrument === "XAU/USD") profitAmount = profitAmount * 1.6;
+        if (selectedInstrument.includes("US30") || selectedInstrument.includes("NAS100")) profitAmount = profitAmount * 1.8;
+        
+        profitAmount = Math.min(profitAmount, 520);
+        profitAmount = Math.max(profitAmount, -450);
+        
+        const newBalanceValue = currentBalance + profitAmount;
+        if (newBalanceValue >= 0) {
+            currentBalance = newBalanceValue;
+        } else {
+            currentBalance = 0;
+        }
+        
+        updateBalanceDisplay();
+        
+        // Record trade
+        tradesHistory.unshift({
+            id: Date.now(),
+            pair: selectedInstrument,
+            side: orderType,
+            entryPrice: tradePrice,
+            pnl: profitAmount,
+            time: new Date().toLocaleTimeString()
+        });
+        displayTradeHistory();
+        
+        if (activeTradingMode === "real") {
+            alert("🔁 REAL MODE (UI Demo) — Virtual trade executed");
+        }
+    }
+    
+    function updateBalanceDisplay() {
+        document.getElementById("balanceValue").innerHTML = `$${currentBalance.toFixed(2)}<small> USD</small>`;
+    }
+    
+    function displayTradeHistory() {
+        const historyContainer = document.getElementById("tradeHistoryContainer");
+        if (tradesHistory.length === 0) {
+            historyContainer.innerHTML = `<div style="text-align: center; color: #5a6e8a; padding: 24px;">✨ No trades yet — click BUY or SELL</div>`;
+            return;
+        }
+        
+        historyContainer.innerHTML = tradesHistory.map(trade => {
+            const profitClass = trade.pnl >= 0 ? "profit-up" : "profit-down";
+            const signSymbol = trade.pnl >= 0 ? "+" : "";
+            const tradeTypeClass = trade.side === "BUY" ? "buy-trade" : "sell-trade";
+            return `
+                <div class="trade-item ${tradeTypeClass}">
+                    <span>${trade.pair}</span>
+                    <span style="font-weight:800;">${trade.side}</span>
+                    <span>$${trade.entryPrice.toFixed(2)}</span>
+                    <span class="${profitClass}">${signSymbol}$${trade.pnl.toFixed(2)}</span>
+                </div>
+            `;
+        }).join('');
+    }
+    
+    // ---------- EVENT LISTENERS ----------
+    document.getElementById("buyTrade").addEventListener("click", () => executeTrade("BUY"));
+    document.getElementById("sellTrade").addEventListener("click", () => executeTrade("SELL"));
+    
+    // Mode switch (Demo / Real)
+    const modeButtons = document.querySelectorAll(".mode-btn");
+    modeButtons.forEach(btn => {
+        btn.addEventListener("click", (e) => {
+            const selectedMode = btn.getAttribute("data-mode");
+            activeTradingMode = selectedMode;
+            modeButtons.forEach(button => button.classList.remove("active"));
+            btn.classList.add("active");
+        });
+    });
+    
+    // Instrument change
+    const instrumentSelector = document.getElementById("instrumentList");
+    instrumentSelector.addEventListener("change", (e) => {
+        const newInstrumentValue = e.target.value;
+        if (priceUpdateInterval) clearInterval(priceUpdateInterval);
+        changeInstrument(newInstrumentValue);
+    });
+    
+    // ---------- START THE PLATFORM ----------
+    initializeChart();
+    priceUpdateInterval = setInterval(() => addLiveCandle(), 5000);
+    updateBalanceDisplay();
+    displayTradeHistory();
+</script>
+</body>
+</html>
